@@ -1,0 +1,19 @@
+
+### GET PERSON 
+GET http://localhost:9000/api/people/72377685
+Accept: application/json
+Authorization: 8d5e0580-f9e9-4b79-adce-46db621ddafe
+
+### GET TOKENS
+http://localhost:9000/api/tokens?token=daustinndev
+
+### CREATE TOKEN
+POST http://localhost:9000/api/tokens?token=daustinndev
+Content-Type: application/json
+
+{
+    "name": "Eda"
+}
+
+### DELETE TOKEN
+DELETE http://localhost:9000/api/tokens/15?token=daustinndev
