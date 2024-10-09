@@ -11,11 +11,7 @@ import { connectToMysqlElp, connectToMysqlIlp } from "../config/database";
 const PORT = process.env.PORT || 8000;
 
 const corsOptions: CorsOptions = {
-  origin: [
-    "http://localhost:8000",
-    "https://ci.ilp.edu.pe:8000",
-    "https://ci.ilp.edu.pe",
-  ],
+  origin: ["http://localhost:8000", "https://ci.ilp.edu.pe:8000"],
   maxAge: 86400,
   exposedHeaders: ["Authorization"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
