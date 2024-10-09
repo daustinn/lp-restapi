@@ -5,13 +5,13 @@ let connection: mysql.Connection;
 export async function connectToMysqlIlp() {
   try {
     connection = await mysql.createConnection({
-      host: "167.172.247.15",
-      user: "ilp_api_dev",
+      host: process.env.DATABASE_HOST,
+      user: process.env.DATABASE_USER,
       password: "42$25@%hK?dR60P&8%a",
       database: "sigu_db_ilp_lic",
       port: 3306,
     });
-    console.log(`Connected to MySQL database: ${process.env.DATABASE_ILP}`);
+    console.log(`Connected to MySQL database: ILP`);
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
