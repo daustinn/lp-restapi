@@ -2,10 +2,15 @@ import express, { type Application } from "express";
 import morgan from "morgan";
 
 import cors, { type CorsOptions } from "cors";
-import { connectToMysql } from "./mysql";
 import { connectToRedis } from "./redis";
 import { routes } from "../routes";
 import { errorHandler } from "../middlewares/error";
+import {
+  connectToMysqlElp,
+  getConnectionElp,
+  getConnectionIlp,
+} from "../config/database";
+
 // import { connectToSQLite } from "./sqlite";
 const PORT = process.env.PORT || 8000;
 
@@ -34,7 +39,8 @@ async function startServer() {
   app.use(express.json());
 
   // CONNECT TO MYSQL
-  connectToMysql();
+  // getConnectionIlp();
+  connectToMysqlElp();
 
   // CONNECT TO REDIS
   connectToRedis();
