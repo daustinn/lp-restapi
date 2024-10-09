@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import redisClient from "../config/redis";
-import { getConnection } from "../config/mysql";
+import { getConnectionElp } from "../config/database";
 
 export const getPerson = async (
   req: Request,
@@ -17,8 +17,14 @@ export const getPerson = async (
       res.json(JSON.parse(cachedPerson));
     }
 
-    const [rows] = (await getConnection().query(
-      "SELECT * FROM users WHERE dni = ?",
+    // const ilp = await getConnectionIlp();
+    const elp = await getConnectionElp();
+
+    const [rows] = (await elp.query(
+      `SELECT people.codigo, people.paterno, people.materno, people.nombres, carer.nomesp FROM alumno AS people
+       JOIN tb_ficha_perso_alu as tfpa on people.codigo =  tfpa.c_codalu
+       JOIN tb_especialidad as carer on people.c_codesp = carer.codesp
+       WHERE people.codigo = ?`,
       [req.params.id]
     )) as any;
 
@@ -27,7 +33,7 @@ export const getPerson = async (
     if (!person) throw new Error("Person not found");
 
     await redisClient.set(`person_${id}`, JSON.stringify(person), {
-      EX: 60 * 60 * 24 * 365,
+      EX: 60 * 60 * 24 * 30,
     });
 
     res.json(rows[0]);
