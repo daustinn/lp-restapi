@@ -5,11 +5,7 @@ import cors, { type CorsOptions } from "cors";
 import { connectToRedis } from "./redis";
 import { routes } from "../routes";
 import { errorHandler } from "../middlewares/error";
-import {
-  connectToMysqlElp,
-  getConnectionElp,
-  getConnectionIlp,
-} from "../config/database";
+import { connectToMysqlElp, connectToMysqlIlp } from "../config/database";
 
 // import { connectToSQLite } from "./sqlite";
 const PORT = process.env.PORT || 8000;
@@ -39,7 +35,7 @@ async function startServer() {
   app.use(express.json());
 
   // CONNECT TO MYSQL
-  // getConnectionIlp();
+  connectToMysqlIlp();
   connectToMysqlElp();
 
   // CONNECT TO REDIS
