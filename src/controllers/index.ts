@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import redisClient from "../config/redis";
-import { getConnectionElp } from "../config/database";
+import { getConnectionElp, getConnectionIlp } from "../config/database";
 
 export const getPerson = async (
   req: Request,
@@ -17,18 +17,26 @@ export const getPerson = async (
       res.json(JSON.parse(cachedPerson));
     }
 
-    // const ilp = await getConnectionIlp();
+    const ilp = await getConnectionIlp();
     const elp = await getConnectionElp();
 
-    const [rows] = (await elp.query(
-      `SELECT people.codigo, people.paterno, people.materno, people.nombres, carer.nomesp FROM alumno AS people
+    let person = null;
+
+    const query = `SELECT people.codigo, people.paterno, people.materno, people.nombres, carer.nomesp FROM alumno AS people
        JOIN tb_ficha_perso_alu as tfpa on people.codigo =  tfpa.c_codalu
        JOIN tb_especialidad as carer on people.c_codesp = carer.codesp
-       WHERE people.codigo = ?`,
-      [req.params.id]
-    )) as any;
+       WHERE people.codigo = ?`;
 
-    const person = rows[0];
+    const [rowsElp] = (await elp.query(query, [req.params.id])) as any;
+
+    if (rowsElp[0]) {
+      person = rowsElp[0];
+    } else {
+      const [rowsIlp] = (await ilp.query(query, [req.params.id])) as any;
+      if (rowsIlp[0]) {
+        person = rowsIlp[0];
+      }
+    }
 
     if (!person) throw new Error("Person not found");
 
@@ -36,7 +44,7 @@ export const getPerson = async (
       EX: 60 * 60 * 24 * 30,
     });
 
-    res.json(rows[0]);
+    res.json(person);
   } catch (error) {
     next(error);
   }
