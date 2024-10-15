@@ -9,6 +9,7 @@ export const getPerson = async (
 ) => {
   try {
     const id = req.params.id;
+    const institution = req.query.institution as string;
     if (!id) throw new Error("Illegal arguments");
 
     const cachedPerson = await redisClient.get(`person_${id}`);
@@ -27,7 +28,7 @@ export const getPerson = async (
                   a.paterno,
                   a.materno,
                   a.nombres,
-                  te.c_abrevesp,
+                  te.nomesp,
                   tfpa.c_sexo,
                   tfpa.c_email_institucional,
                   tmf.n_codper,
@@ -47,15 +48,15 @@ export const getPerson = async (
                 LIMIT
                   1`;
 
-    const [rowsElp] = (await elp.query(query, [req.params.id])) as any;
-
-    if (rowsElp[0]) {
-      match = rowsElp[0];
-    } else {
+    if (institution == "ilp") {
       const [rowsIlp] = (await ilp.query(query, [req.params.id])) as any;
-      if (rowsIlp[0]) {
-        match = rowsIlp[0];
-      }
+      if (rowsIlp[0]) match = rowsIlp[0];
+    }
+
+    if (institution == "elp") {
+      const [rowsElp] = (await elp.query(query, [req.params.id])) as any;
+
+      if (rowsElp[0]) match = rowsElp[0];
     }
 
     if (!match) throw new Error("Person not found");
@@ -63,13 +64,17 @@ export const getPerson = async (
     const person = {
       id: match.codigo,
       firstName: match.nombres.trim(),
-      lastName: `${match.paterno} ${match.materno}`,
+      lastName: match.paterno,
+      lastName_2: match.materno,
       email: match.c_email_institucional,
-      career: match.c_abrevesp,
+      career: match.nomesp,
       sex: match.c_sexo,
       periodCode: match.n_codper,
       periodName: match.c_perlit,
-      institution: rowsElp[0] ? "ELP" : "ILP",
+      institution:
+        institution === "ilp"
+          ? "Instituto La Pontificia"
+          : "Escuela Superior La Pontificia",
     };
     await redisClient.set(`person_${id}`, JSON.stringify(person), {
       EX: 60 * 60 * 24 * 30,
