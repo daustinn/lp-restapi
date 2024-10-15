@@ -85,9 +85,13 @@ export const getPerson = async (
             ? "Instituto La Pontificia"
             : "Escuela Superior La Pontificia",
       };
-      await redisClient.set(`person_${id}`, JSON.stringify(person), {
-        EX: 60 * 60 * 24 * 30,
-      });
+      await redisClient.set(
+        `person_${id}_${institution}`,
+        JSON.stringify(person),
+        {
+          EX: 60 * 60 * 24 * 30,
+        }
+      );
 
       closeConnectionElp();
       closeConnectionIlp();
