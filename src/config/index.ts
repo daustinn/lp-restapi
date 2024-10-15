@@ -8,7 +8,7 @@ import { errorHandler } from "../middlewares/error";
 import { connectToMysqlElp, connectToMysqlIlp } from "../config/database";
 
 // import { connectToSQLite } from "./sqlite";
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8001;
 
 const corsOptions: CorsOptions = {
   origin: ["http://localhost:8000", "https://ci.ilp.edu.pe:8000"],
