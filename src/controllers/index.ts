@@ -19,7 +19,7 @@ export const getPerson = async (
     const institution = req.query.institution as string;
     if (!id) throw new Error("Illegal arguments");
 
-    const cachedPerson = await redisClient.get(`person_${id}`);
+    const cachedPerson = await redisClient.get(`person_${id}_${institution}`);
 
     if (cachedPerson) {
       res.json(JSON.parse(cachedPerson));
